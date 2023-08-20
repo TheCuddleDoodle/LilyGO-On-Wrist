@@ -1,1 +1,1 @@
-# LilyGO-ON-Wrist 
+# LilyGO-ON-Wrist
