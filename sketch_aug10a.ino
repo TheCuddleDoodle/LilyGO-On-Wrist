@@ -44,6 +44,15 @@ RTC_DATA_ATTR int bootCount = 0;
 
 RTC_DATA_ATTR time_t sleepEnterTime;
 RTC_DATA_ATTR time_t initBootTime;
+
+
+
+void setClock();
+void printLocalTime_from_boot();
+void printLocalTime();
+
+
+
 void print_wakeup_reason() {
   esp_sleep_wakeup_cause_t wakeup_reason;
 
@@ -118,135 +127,33 @@ void setup(void) {
 
 }
 
+
+
+
+
+void loop() { 
+  setClock();
+}
+
+
+
+
+
 int x = 0;
 long startF = 0;
 long endF = 0;
 double fps = 0;
-
-void printLocalTime() {
-  struct tm timeinfo;
-
-  if (!getLocalTime( & timeinfo)) {
-
-    return;
-  }
-   char buff[100];
-  strftime (buff, 100, "from wifi %Y-%m-%d %H:%M:%S.000",  & timeinfo);
-  Serial.println(buff);
-  
-  strftime(timeHour, 3, "%H", & timeinfo);
-  strftime(timeMin, 3, "%M", & timeinfo);
-  strftime(timeSec, 3, "%S", & timeinfo);
-
-  strftime(timeWeekDay, 10, "%A", & timeinfo);
-  dayInWeek = String(timeWeekDay);
-
-  strftime(day, 3, "%d", & timeinfo);
-  strftime(month, 6, "%B", & timeinfo);
-  strftime(year, 5, "%Y", & timeinfo);
-  struct tm stored_Time = *localtime(&initBootTime);
-  char storedtime[100];
-  strftime (storedtime, 100, "from storedtime %Y-%m-%d %H:%M:%S.000",  & stored_Time);
-  Serial.println(storedtime);
-
-}
-
-void printLocalTime_from_boot() {
-  time_t now;
-  time( & now);
-  struct tm timeinfo = * localtime( & now);
-  if (!getLocalTime( & timeinfo)) {
-
-    return;
-  }
-  char buff[100];
-  strftime (buff, 100, "from local boot time %Y-%m-%d %H:%M:%S.000",  & timeinfo);
-  Serial.println(buff);
-  timeinfo.tm_hour += 5;
-  timeinfo.tm_min += 30;
-  if (bootCount != 0) {
-    while (timeinfo.tm_sec >= 60) {
-      timeinfo.tm_sec -= 60;
-      timeinfo.tm_min++;
-    }
-    while (timeinfo.tm_min >= 60) {
-      timeinfo.tm_min -= 60;
-      timeinfo.tm_hour++;
-    }
-  }
-
-  strftime(timeHour, 3, "%H", & timeinfo);
-  strftime(timeMin, 3, "%M", & timeinfo);
-  strftime(timeSec, 3, "%S", & timeinfo);
-
-  strftime(timeWeekDay, 10, "%A", & timeinfo);
-  dayInWeek = String(timeWeekDay);
-
-  strftime(day, 3, "%d", & timeinfo);
-  strftime(month, 6, "%B", & timeinfo);
-  strftime(year, 5, "%Y", & timeinfo);
-
-}
-
-
 
 long t = 0;
 long f = 0;
 int xt = 230;
 int yt = 8;
 
-// uint32_t volt = (analogRead(4) * 2 * 3.3 * 1000) / 4096;
-
-void offsetrtc(){
-  time_t now;
-  time( & now);
-  struct tm timeinfo = * localtime( & now);
-
-
-    // Your existing code to get timeinfo
-
-    // Add offset of 5 hours and 30 minutes
-    timeinfo.tm_hour += 5;
-    timeinfo.tm_min += 30;
-
-    // Adjust minutes and hours if they overflow
-    if (timeinfo.tm_min >= 60) {
-      timeinfo.tm_min -= 60;
-      timeinfo.tm_hour++;
-    }
-
-    if (timeinfo.tm_hour >= 24) {
-      timeinfo.tm_hour -= 24;
-    }
-
-    // Convert the timeinfo to a formatted string
-    char buff[100];
-    strftime(buff, 100, "after 2nd boot set time %Y-%m-%d %H:%M:%S.000", & timeinfo);
-    Serial.println(buff);
-
-    // Extract individual time components
-    char timeHour[3];
-    char timeMin[3];
-    char timeSec[3];
-    char day[3];
-    char month[6];
-    char year[5];
-
-    strftime(timeHour, 3, "%H", & timeinfo);
-    strftime(timeMin, 3, "%M", & timeinfo);
-    strftime(timeSec, 3, "%S", & timeinfo);
-    strftime(day, 3, "%d", & timeinfo);
-    strftime(month, 6, "%B", & timeinfo);
-    strftime(year, 5, "%Y", & timeinfo);
-}
-
-
-void loop() {
+void setClock(){
   //  if(digitalRead(left)==0)
   //  xt--;
   //  if(digitalRead(right)==0)
   //  xt++;
-
   startF = millis();
 
   spr.fillSprite(TFT_GREEN);
@@ -312,4 +219,71 @@ void loop() {
 
   endF = millis();
   fps = 1000 / (endF - startF);
+}
+
+
+
+void printLocalTime() {
+  struct tm timeinfo;
+
+  if (!getLocalTime( & timeinfo)) {
+
+    return;
+  }
+   char buff[100];
+  strftime (buff, 100, "from wifi %Y-%m-%d %H:%M:%S.000",  & timeinfo);
+  Serial.println(buff);
+  
+  strftime(timeHour, 3, "%H", & timeinfo);
+  strftime(timeMin, 3, "%M", & timeinfo);
+  strftime(timeSec, 3, "%S", & timeinfo);
+
+  strftime(timeWeekDay, 10, "%A", & timeinfo);
+  dayInWeek = String(timeWeekDay);
+
+  strftime(day, 3, "%d", & timeinfo);
+  strftime(month, 6, "%B", & timeinfo);
+  strftime(year, 5, "%Y", & timeinfo);
+  struct tm stored_Time = *localtime(&initBootTime);
+  char storedtime[100];
+  strftime (storedtime, 100, "from storedtime %Y-%m-%d %H:%M:%S.000",  & stored_Time);
+  Serial.println(storedtime);
+
+}
+
+void printLocalTime_from_boot() {
+  time_t now;
+  time( & now);
+  struct tm timeinfo = * localtime( & now);
+  if (!getLocalTime( & timeinfo)) {
+
+    return;
+  }
+  char buff[100];
+  strftime (buff, 100, "from local boot time %Y-%m-%d %H:%M:%S.000",  & timeinfo);
+  Serial.println(buff);
+  timeinfo.tm_hour += 5;
+  timeinfo.tm_min += 30;
+  if (bootCount != 0) {
+    while (timeinfo.tm_sec >= 60) {
+      timeinfo.tm_sec -= 60;
+      timeinfo.tm_min++;
+    }
+    while (timeinfo.tm_min >= 60) {
+      timeinfo.tm_min -= 60;
+      timeinfo.tm_hour++;
+    }
+  }
+
+  strftime(timeHour, 3, "%H", & timeinfo);
+  strftime(timeMin, 3, "%M", & timeinfo);
+  strftime(timeSec, 3, "%S", & timeinfo);
+
+  strftime(timeWeekDay, 10, "%A", & timeinfo);
+  dayInWeek = String(timeWeekDay);
+
+  strftime(day, 3, "%d", & timeinfo);
+  strftime(month, 6, "%B", & timeinfo);
+  strftime(year, 5, "%Y", & timeinfo);
+
 }
