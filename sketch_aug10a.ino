@@ -165,9 +165,6 @@ void printLocalTime_from_boot() {
   timeinfo.tm_hour += 5;
   timeinfo.tm_min += 30;
   if (bootCount != 0) {
-    // The device has woken up from a deep sleep
-    // Calculate elapsed time
-    // adjust minutes and hours if seconds are over 60
     while (timeinfo.tm_sec >= 60) {
       timeinfo.tm_sec -= 60;
       timeinfo.tm_min++;
